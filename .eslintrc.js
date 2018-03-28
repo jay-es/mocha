@@ -9,6 +9,7 @@ module.exports = {
     'html',
   ],
   rules: {
+    'no-continue': 0,
   },
   globals: {
   }

@@ -1,5 +1,6 @@
-./src/**/*.spec.js
+./src/**/_test/*.js
 --reporter spec
 --reporter list
 --reporter dot
+--reporter min
 --require babel-core/register

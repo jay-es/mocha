@@ -41,11 +41,78 @@ describe('CellGroup', () => {
 
       assert.strictEqual(true, cells[0].possibilities[2]);
       assert.strictEqual(true, cells[1].possibilities[2]);
+      assert.strictEqual(false, cells[2].possibilities[2]);
+      assert.strictEqual(false, cells[3].possibilities[2]);
 
       cellGroup.precludeNum(2);
 
       assert.strictEqual(false, cells[0].possibilities[2]);
       assert.strictEqual(false, cells[1].possibilities[2]);
+      assert.strictEqual(false, cells[2].possibilities[2]);
+      assert.strictEqual(false, cells[3].possibilities[2]);
+    });
+
+    it('cellの値がセットされたら、cellGroupでprecludeNumが実行される', () => {
+      const cells = createCells([0, 0, 3, 1]);
+      new CellGroup(cells); // eslint-disable-line no-new
+
+      assert.strictEqual(true, cells[0].possibilities[2]);
+      assert.strictEqual(true, cells[1].possibilities[2]);
+      assert.strictEqual(false, cells[2].possibilities[2]);
+      assert.strictEqual(false, cells[3].possibilities[2]);
+
+      cells[1].setValue(2);
+
+      assert.strictEqual(false, cells[0].possibilities[2]);
+      assert.strictEqual(false, cells[1].possibilities[2]);
+      assert.strictEqual(false, cells[2].possibilities[2]);
+      assert.strictEqual(false, cells[3].possibilities[2]);
+    });
+  });
+
+  describe('getExclusiveCell', () => {
+    it('ない場合', () => {
+      const cells = createCells([0, 2, 3, 1]);
+      const cellGroup = new CellGroup(cells);
+
+      assert.strictEqual(null, cellGroup.getExclusiveCell(2));
+    });
+
+    it('ひとつだけある場合', () => {
+      const cells = createCells([4, 0, 3, 1]);
+      const cellGroup = new CellGroup(cells);
+
+      assert.strictEqual(cells[1], cellGroup.getExclusiveCell(2));
+    });
+
+    it('複数ある場合', () => {
+      const cells = createCells([0, 0, 3, 1]);
+      const cellGroup = new CellGroup(cells);
+
+      assert.strictEqual(null, cellGroup.getExclusiveCell(2));
+    });
+  });
+
+  describe('getPossibleCells', () => {
+    it('ない場合', () => {
+      const cells = createCells([0, 2, 3, 1]);
+      const cellGroup = new CellGroup(cells);
+
+      assert.strictEqual(null, cellGroup.getPossibleCells(2));
+    });
+
+    it('ひとつだけある場合', () => {
+      const cells = createCells([4, 0, 3, 1]);
+      const cellGroup = new CellGroup(cells);
+
+      assert.deepStrictEqual([cells[1]], cellGroup.getPossibleCells(2));
+    });
+
+    it('複数ある場合', () => {
+      const cells = createCells([0, 0, 3, 1]);
+      const cellGroup = new CellGroup(cells);
+
+      assert.deepStrictEqual([cells[0], cells[1]], cellGroup.getPossibleCells(2));
     });
   });
 });

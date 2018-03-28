@@ -40,7 +40,7 @@ describe('Cell', () => {
       cell[2] = 0;
       cell[4] = 0;
       assert.strictEqual(3, cell.getExclusivePossibility());
-      cell.value = 1;
+      cell.setValue(1);
       assert.strictEqual(0, cell.getExclusivePossibility());
     });
   });

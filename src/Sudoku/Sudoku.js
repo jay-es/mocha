@@ -5,7 +5,7 @@ export default class Sudoku {
   constructor(board) {
     const boardSize = board.length;
     const boxSize = Math.sqrt(boardSize);
-    const cells = board.map(arr => arr.map(v => new Cell(v, boardSize)));
+    const cells = board.map((arr, ri) => arr.map((v, ci) => new Cell(v, boardSize, ri, ci)));
 
     this.rows = cells.map(arr => new CellGroup(arr));
     this.cols = cells.map((row, ri) => new CellGroup(cells.map(col => col[ri])));
@@ -41,23 +41,9 @@ export default class Sudoku {
     let isChanged = true;
 
     while (isChanged) {
-      // preclude
-      for (let n = 1; n <= boardSize; n += 1) {
-        for (let i = 0; i < boardSize; i += 1) {
-          if (rows[i].hasNum(n)) {
-            rows[i].precludeNum(n);
-          }
-          if (cols[i].hasNum(n)) {
-            cols[i].precludeNum(n);
-          }
-          if (boxes[i].hasNum(n)) {
-            boxes[i].precludeNum(n);
-          }
-        }
-      }
-
-      // set value
       isChanged = false;
+
+      // セルごとの判定
       for (let ri = 0; ri < boardSize; ri += 1) {
         for (let ci = 0; ci < boardSize; ci += 1) {
           const cell = rows[ri][ci];
@@ -65,9 +51,57 @@ export default class Sudoku {
 
           const num = cell.getExclusivePossibility();
           if (num) {
-            cell.value = num;
+            cell.setValue(num);
             isChanged = true;
           }
+        }
+      }
+
+      // グループごとの判定
+      for (let gi = 0; gi < boardSize; gi += 1) {
+        for (let n = 1; n <= boardSize; n += 1) {
+          let cell = rows[gi].getExclusiveCell(n);
+
+          if (cell) {
+            cell.setValue(n);
+            isChanged = true;
+          }
+
+          cell = cols[gi].getExclusiveCell(n);
+
+          if (cell) {
+            cell.setValue(n);
+            isChanged = true;
+          }
+
+          cell = boxes[gi].getExclusiveCell(n);
+
+          if (cell) {
+            cell.setValue(n);
+            isChanged = true;
+          }
+        }
+      }
+
+      // ボックスの中で行or列が決まっていたら、行or列グループの別ボックス部分の可能性を消す
+      for (let gi = 0; gi < boardSize; gi += 1) {
+        for (let n = 1; n <= boardSize; n += 1) {
+          const cells = boxes[gi].getPossibleCells(n);
+          if (!cells || cells.length === 1) continue;
+
+          const { rowNum, colNum } = cells[0];
+          const isSameRow = cells.every(cell => cell.rowNum === rowNum);
+          const isSameCol = cells.every(cell => cell.colNum === colNum);
+
+          const fn = (cell) => {
+            if (cell[n] && !cells.includes(cell)) {
+              cell[n] = false;
+              isChanged = true;
+            }
+          };
+
+          if (isSameRow) rows[rowNum].cells.forEach(fn);
+          if (isSameCol) cols[colNum].cells.forEach(fn);
         }
       }
     }
