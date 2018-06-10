@@ -1,5 +1,2 @@
 ./src/**/*.spec.js
---reporter spec
---reporter list
---reporter dot
 --require babel-core/register

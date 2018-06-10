@@ -18,8 +18,8 @@
     "power-assert": "^1.4.4"
   },
   "scripts": {
-    "test": "mocha --watch",
-    "test2": "mocha || exit 0"
+    "test": "mocha --reporter dot --watch",
+    "test:once": "mocha || exit 0"
   },
   "author": "",
   "license": "ISC"
