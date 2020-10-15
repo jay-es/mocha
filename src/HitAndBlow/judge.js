@@ -2,7 +2,6 @@
 /**
  * @param {string} left
  * @param {string} right
- * @returns {{ hit: number, blow: number }}
  */
 export const judge = (left, right) =>
   [...left].reduce(
